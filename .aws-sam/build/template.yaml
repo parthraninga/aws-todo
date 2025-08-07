@@ -4,121 +4,135 @@ Globals:
   Function:
     Runtime: nodejs18.x
     Timeout: 10
-
 Resources:
   TodoTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: Todos
       AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
+      - AttributeName: id
+        AttributeType: S
       KeySchema:
-        - AttributeName: id
-          KeyType: HASH
+      - AttributeName: id
+        KeyType: HASH
       BillingMode: PAY_PER_REQUEST
-
   CreateFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: app/create.handler
-      CodeUri: .
+      CodeUri: CreateFunction
       Environment:
         Variables:
-          TABLE_NAME: !Ref TodoTable
+          TABLE_NAME:
+            Ref: TodoTable
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref TodoTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TodoTable
       Events:
         CreateAPI:
           Type: Api
           Properties:
             Path: /todos
             Method: POST
-
+    Metadata:
+      SamResourceId: CreateFunction
   ListFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: app/list.handler
-      CodeUri: .
+      CodeUri: ListFunction
       Environment:
         Variables:
-          TABLE_NAME: !Ref TodoTable
+          TABLE_NAME:
+            Ref: TodoTable
       Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref TodoTable
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: TodoTable
       Events:
         ListAPI:
           Type: Api
           Properties:
             Path: /todos
             Method: GET
-
+    Metadata:
+      SamResourceId: ListFunction
   ReadFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: app/read.handler
-      CodeUri: .
+      CodeUri: ReadFunction
       Environment:
         Variables:
-          TABLE_NAME: !Ref TodoTable
+          TABLE_NAME:
+            Ref: TodoTable
       Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref TodoTable
+      - DynamoDBReadPolicy:
+          TableName:
+            Ref: TodoTable
       Events:
         ReadAPI:
           Type: Api
           Properties:
             Path: /todos/{id}
             Method: GET
-
+    Metadata:
+      SamResourceId: ReadFunction
   UpdateFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: app/update.handler
-      CodeUri: .
+      CodeUri: UpdateFunction
       Environment:
         Variables:
-          TABLE_NAME: !Ref TodoTable
+          TABLE_NAME:
+            Ref: TodoTable
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref TodoTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TodoTable
       Events:
         UpdateAPI:
           Type: Api
           Properties:
             Path: /todos/{id}
             Method: PUT
-
+    Metadata:
+      SamResourceId: UpdateFunction
   DeleteFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: app/delete.handler
-      CodeUri: .
+      CodeUri: DeleteFunction
       Environment:
         Variables:
-          TABLE_NAME: !Ref TodoTable
+          TABLE_NAME:
+            Ref: TodoTable
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref TodoTable
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: TodoTable
       Events:
         DeleteAPI:
           Type: Api
           Properties:
             Path: /todos/{id}
             Method: DELETE
-
+    Metadata:
+      SamResourceId: DeleteFunction
 Outputs:
   TodoApi:
-    Description: "API Gateway endpoint URL for Todo API"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+    Description: API Gateway endpoint URL for Todo API
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
     Export:
-      Name: !Sub "${AWS::StackName}-TodoApi"
-  
+      Name:
+        Fn::Sub: ${AWS::StackName}-TodoApi
   TodoTable:
-    Description: "DynamoDB table name"
-    Value: !Ref TodoTable
+    Description: DynamoDB table name
+    Value:
+      Ref: TodoTable
     Export:
-      Name: !Sub "${AWS::StackName}-TodoTable"
-
-# This will work perfectly
+      Name:
+        Fn::Sub: ${AWS::StackName}-TodoTable
